@@ -1,0 +1,70 @@
+\chapter{Caffe基础}
+\section{Caffe配置文件}
+训练或者测试配置文件（pbtxt）,其包含有数据源、学习率包含内容：
+\begin{enumerate}
+  \item net:配置网络结构,一般通过指定另一个配置文件来配置。
+  \item test\_iter:测试数据的迭代次数
+  \item test\_interval:训练多少步之后开始测试一次。
+  \item 设置学习率调度：
+	  \begin{itemize}
+		  \item base\_lr：基础学习率
+		  \item momentun：0.9
+		  \item weight\_decay：权重衰减系数
+		  \item lr\_policy:学习率调度策略。
+			  \begin{itemize}
+				  \item fixed：保持base\_lr不变。
+				  \item step：如果设置为step还需要设置一个stepsize，表示迭代多少步之后衰减。$base_{lr}\cdot\gamma^{(floor(iter/stepsize))}$
+				  \item inv：设置为inv之后还需要设置一个power，返回$base\_lr(1+\gamma*iter)^{-power}$
+				  \item multistep：如果设置为multistep，还需设置一个stepvalue，这个参数和step类似，step是均匀等间隔的变化，二multistep则根据stepvalue值变化。
+				  \item poly：学习率进行多项是衰减，返回$base_{lr}(1-iter/max_{iter})^(power)$
+				  \item sigmoid：学习率进行sigmoid衰减，返回$base\_{lr}(1-e^{-\gamma(iter-stepsize)})$
+			  \end{itemize}
+	  \end{itemize}
+  \item display：配置每多少次迭代后打印结果。
+  \item max\_iter：最大迭代次数。
+  \item snapshot：训练多少次之后保存一下中间文件。
+  \item snapshot\_prefix：中间文件的存放路径。
+  \item solve\_mode配置训练模式：GPU或者是CPU。
+\end{enumerate}
+配置网络结构的信息
+\begin{enumerate}
+	\item  name：表示当前自己定义的网络叫什么名字。
+	\item  layer:网络结构的基本单元主要包括，一般的数据层包含有：
+		\begin{itemize}
+			\item  name:当前层的名字
+			\item  type:当前层类型，一般网络的第一层的类型都是Data。
+			\item  top:当前层的接的上一层是什么。
+			\item  bottom：当前层的下一个层是什么，有些层可能只有top没有bottom，中间层一般都有。
+			\item  include：说明当前当前层在哪个阶段调用，其phase一般只有TRAIN和TEST。
+			\item  transform\_param:数据预处理参数
+				\begin{itemize}
+					\item scale：数据缩放，一般用来将元素像素的每一个元素变换到0-1之间，典型值为$\frac{1}{255}=0.00390625$
+					\item mean\_file\_size：通过文件来指定当前数据的mean信息。
+					\item mirror：true或者false，用来表示是否镜像文件。
+					\item crop\_size：用来随机剪裁部分图像信息。同一个选项在测试和训练中的执行可能不一样，比如训练中可能随机剪裁一块指定大小的区域而测试中则剪裁中间的区域。
+				\end{itemize}
+			\item  data\_param：数据信息。
+				\begin{itemize}
+					\item source：原始数据的存放地址，通常数据会被处理为lmdb形式。
+					\item batch\_size：数据读取的batch\_size。
+					\item backend：数据的后端，通常为LMDB。
+				\end{itemize}
+		\end{itemize}
+	\item layer（卷积层包含）
+		\begin{itemize}
+			\item name：卷积层的名称、type：Convolution、top：接上层哪一个层作为输出、top输出层叫什么。
+			\item param：
+				\begin{itemize}
+					\item lr\_mult：如果值为x，相当于solver.pbtxt中的base\_lr*x作为该层的学习率。x为0表示不需要学习。不设置则默认为1。
+					\item decay\_mult：正则化权重，防止过拟合用。caffe中除了全局weight\_decay外还有自己的局部加权值decay\_mult，卷积层除了W和b之外还有自己的lr\_mult和decay\_mult。
+				\end{itemize}
+					\item convolution\_param：卷积层参数
+						\begin{itemize}
+							\item num\_output：卷积层的输出（kernel）数。
+							\item kernel\_size：卷积层的size。
+							\item stride：卷积核移动的stride。
+							\item weight\_filler：卷积核初始化参数初始化方式。
+							\item bias\_filter：bias初始化方式。
+						\end{itemize}
+		\end{itemize}
+\end{enumerate}
