@@ -1,0 +1,12 @@
+{
+	"dataset_path":"/home/liushuai/flower_photos/flower",
+	"convert_program":"/home/liushuai/caffe/.build_release/tools/convert_imageset",
+	"export_data_path":"/tmp/flower_photos/export",
+	"resized_shape":[229,229],
+	"dataset_path_prefix":"/",
+	"train_lmdb_path":"/tmp/flower_photos/export/flower_train_lmdb",
+	"test_lmdb_path":"/tmp/flower_photos/export/flower_test_lmdb",
+	"train_txt_path":"/tmp/flower_photos/export/train.txt",
+	"test_txt_path":"/tmp/flower_photos/export/test.txt",
+	"binary_means":"/home/liushuai/caffe/examples/flowers/flower_mean.binary"
+}
