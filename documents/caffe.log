@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999992 (TeX Live 2020) (preloaded format=xelatex 2021.1.10)  6 FEB 2021 22:08
+This is XeTeX, Version 3.14159265-2.6-0.999992 (TeX Live 2020) (preloaded format=xelatex 2021.3.6)  11 MAR 2021 23:12
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1555,8 +1555,8 @@ Package rerunfilecheck Info: File `caffe.out' has not changed.
  ) 
 Here is how much of TeX's memory you used:
  36965 strings out of 479418
- 773866 string characters out of 5884585
- 1424064 words of memory out of 5000000
+ 773866 string characters out of 5884586
+ 1423064 words of memory out of 5000000
  53768 multiletter control sequences out of 15000+600000
  558571 words of font info for 71 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
