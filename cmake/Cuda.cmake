@@ -4,7 +4,7 @@ endif()
 
 # Known NVIDIA GPU achitectures Caffe can be compiled for.
 # This list will be used for CUDA_ARCH_NAME = All option
-set(Caffe_known_gpu_archs "20 21(20) 30 35 50 52 61")
+set(Caffe_known_gpu_archs "20 21(20) 30 35 50 52 61 75 80")
 
 ################################################################################################
 # A function for automatic detection of GPUs installed  (if autodetection is enabled)
@@ -191,6 +191,7 @@ function(detect_cuDNN)
     set(CUDNN_FOUND TRUE PARENT_SCOPE)
 
     file(READ ${CUDNN_INCLUDE}/cudnn.h CUDNN_VERSION_FILE_CONTENTS)
+	set(CUDNN_VERSION_MAJOR )
 
     # cuDNN v3 and beyond
     string(REGEX MATCH "define CUDNN_MAJOR * +([0-9]+)"
@@ -207,7 +208,7 @@ function(detect_cuDNN)
            CUDNN_VERSION_PATCH "${CUDNN_VERSION_PATCH}")
 
     if(NOT CUDNN_VERSION_MAJOR)
-      set(CUDNN_VERSION "???")
+      set(CUDNN_VERSION "8")
     else()
       set(CUDNN_VERSION "${CUDNN_VERSION_MAJOR}.${CUDNN_VERSION_MINOR}.${CUDNN_VERSION_PATCH}")
     endif()

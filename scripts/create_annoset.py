@@ -5,7 +5,7 @@ import os
 import shutil
 import subprocess
 import sys
-sys.path.insert(0, '/home/liushuai/caffe/python')
+sys.path.insert(0, os.path.expanduser('~/caffe/python'))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

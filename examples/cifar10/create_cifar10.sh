@@ -1,8 +1,12 @@
 #!/usr/bin/env sh
 # This script converts the cifar data into leveldb format.
 set -e
+<<<<<<< HEAD
+CAFFE_HOME=${HOME}/caffe-env 
+=======
 CAFFE_HOME=${HOME}/caffe
 cd ${CAFFE_HOME}
+>>>>>>> origin/main
 EXAMPLE=${CAFFE_HOME}/examples/cifar10
 DATA=${CAFFE_HOME}/data/cifar10
 DBTYPE=lmdb
@@ -19,11 +23,21 @@ delete_output_path ${output_train_path}
 delete_output_path ${output_test_path}
 convert_tool=`find ${CAFFE_HOME} -name convert_cifar_data.bin -type f`
 
+<<<<<<< HEAD
+rm -rf $EXAMPLE/cifar10_train_$DBTYPE $EXAMPLE/cifar10_test_$DBTYPE
+
+convert_cifar_data.bin $DATA $EXAMPLE $DBTYPE
+
+echo "Computing image mean..."
+
+compute_image_mean -backend=$DBTYPE \
+=======
 ${convert_tool} $DATA $EXAMPLE $DBTYPE
 
 echo "Computing image mean..."
 compute_image_mean=`find ${CAFFE_HOME} -name compute_image_mean`
 ${compute_image_mean} -backend=$DBTYPE \
+>>>>>>> origin/main
   $EXAMPLE/cifar10_train_$DBTYPE $EXAMPLE/mean.binaryproto
 
 echo "Done."
