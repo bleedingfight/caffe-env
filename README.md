@@ -1,5 +1,8 @@
 # Q-engineering:
 ## This is the SSD branch of weiliu89/caffe 
+```
+sudo pacman -S boost leveldb
+```
 Modified for OpenCV 4, cuDNN 8 and Python3:
 - include/caffe/common.hpp<br/>
 - src/caffe/util/im_transforms.cpp<br/>
