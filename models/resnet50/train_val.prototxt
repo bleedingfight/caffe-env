@@ -10,7 +10,7 @@ layer {
   transform_param {
     mirror: true
     crop_size: 224
-    mean_file: "/tmp/caffe_dataset/mean.binaryproto"
+    mean_file: "/tmp/caffe_dataset/mean_train.binary"
   }
   data_param {
     source: "/tmp/caffe_dataset/train_lmdb"
@@ -29,7 +29,7 @@ layer {
   transform_param {
     mirror: false
     crop_size: 224
-    mean_file: "/tmp/caffe_dataset/mean_val.binaryproto"
+    mean_file: "/tmp/caffe_dataset/mean_val.binary"
   }
   data_param {
     source: "/tmp/caffe_dataset/val_lmdb"
