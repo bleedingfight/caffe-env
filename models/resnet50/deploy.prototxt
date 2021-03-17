@@ -2305,7 +2305,7 @@ layer {
         name: "my-classifier"
         type: "InnerProduct"
         inner_product_param {
-                num_output: 3
+                num_output: 37
         }
 }
 layer {

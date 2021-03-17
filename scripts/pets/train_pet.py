@@ -12,9 +12,9 @@ def datapreprocess(dataset_path, output_path, rate=0.8):
     images = glob.glob("{}/*.jpg".format(dataset_path))
     class_names = set()
     dataset_dict = {}
+    image_to_name = lambda x:"_".join(basename(x).split('_')[:-1])
     for image in images:
-        image_filename = basename(image)
-        class_name = "_".join(image_filename.split('_')[:-1])
+        class_name = image_to_name(image)
         class_names.add(class_name)
         if class_name not in dataset_dict:
             dataset_dict[class_name] = [image]
@@ -37,10 +37,9 @@ def datapreprocess(dataset_path, output_path, rate=0.8):
             output_path_tmp = join(output_path, phase)
             if not exists(output_path_tmp):
                 os.makedirs(output_path_tmp)
-            [shutil.copy(image, output_path_tmp)
-             for image in split_image[phase]]
-            [label_hander[phase].write('{}\n'.format(
-                basename(image))) for image in split_image[phase]]
+            [shutil.copy(image, output_path_tmp) for image in split_image[phase]]
+            
+            [label_hander[phase].write("{} {}\n".format(basename(image),class_to_num[image_to_name(image)])) for image in split_image[phase]]
     [label_hander[key].close() for key in label_hander]
     result = {'train_image_label': join(
         output_path, 'train.txt'), 'val_image_label': join(output_path, 'val.txt'), 'label_to_num': join(output_path, 'label.json'), 'train_dataset': join(output_path, 'train'), 'val_dataset': join(output_path, 'val')}
