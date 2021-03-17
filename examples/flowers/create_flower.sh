@@ -68,6 +68,12 @@ function ProcessDataset(){
     echo "Done."
 }
 CAFFE_HOME=${HOME}/caffe
+if [ ! -d ${CAFFE_HOME} ];then 
+	CAFFE_HOME = ${HOME}/caffe-env 
+fi 
+if [ ! -d ${CAFFE_HOME} ];then
+	exit
+fi
 DATA=/tmp/flower_photos/export
 EXAMPLE=${DATA}
 TOOLS=${CAFFE_HOME}/.build_release/tools

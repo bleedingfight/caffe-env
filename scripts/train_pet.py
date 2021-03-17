@@ -4,7 +4,8 @@ import shutil
 from os.path import join, basename, dirname, exists
 import os
 import json
-import shlex,subprocess
+import shlex
+import subprocess
 
 
 def datapreprocess(dataset_path, output_path, rate=0.8):
@@ -55,37 +56,52 @@ def findfile(start, name):
     return res
 
 
-def convert_dataset(output_res, dataset_store, shape=(225, 225)):
+def convert_dataset(output_res, dataset_store, shape=(224, 224)):
     caffe_home = os.path.expanduser('~/caffe')
+    if not os.path.exists(caffe_home):
+        caffe_home = os.path.expanduser('~/caffe-env')
 
     convert_tool = findfile(caffe_home, 'convert_imageset')
     assert convert_tool is not None, "Can't find convert_imageset"
-    ouput_lmdb_train = join(dataset_store, 'train_lmdb')
-    ouput_lmdb_val = join(dataset_store, 'val_lmdb')
+    if not exists(dataset_store):
+        os.makedirs(dataset_store)
+    output_lmdb_train = join(dataset_store, 'train_lmdb')
+    output_lmdb_val = join(dataset_store, 'val_lmdb')
 
-    if exists(ouput_lmdb_train):
-        shutil.rmtree(ouput_lmdb_train)
-    if exists(ouput_lmdb_val):
-        shutil.rmtree(ouput_lmdb_val)
-    
+    if exists(output_lmdb_train):
+        shutil.rmtree(output_lmdb_train)
+    if exists(output_lmdb_val):
+        shutil.rmtree(output_lmdb_val)
+
     command_train = "{} --shuffle --resize_height={} --resize_width={}  {}/ {}  {}".format(
-        convert_tool, shape[0], shape[1], output_res['train_dataset'],output_res['train_image_label'], ouput_lmdb_train)
+        convert_tool, shape[0], shape[1], output_res['train_dataset'], output_res['train_image_label'], output_lmdb_train)
     command_val = "{} --shuffle --resize_height={} --resize_width={}  {}/ {}  {}".format(
-        convert_tool, shape[0], shape[1], output_res['train_dataset'],output_res['val_image_label'] ,ouput_lmdb_val)
+        convert_tool, shape[0], shape[1], output_res['val_dataset'], output_res['val_image_label'], output_lmdb_val)
     args_train = shlex.split(command_train)
     args_val = shlex.split(command_val)
-    ferror = open('log.err','w')
-    p = subprocess.Popen(args_train,stdout=ferror)
-    p = subprocess.Popen(args_val,stdout=ferror)
+    ferror = open('log.err', 'w')
+    p = subprocess.Popen(args_train, stdout=ferror)
+    p = subprocess.Popen(args_val, stdout=ferror)
     ferror.close()
+    # compute_image_mean = findfile(caffe_home, 'compute_image_mean')
+    # if compute_image_mean is not None:
+    #     command = "{} {} {}".format(compute_image_mean, output_lmdb_train+"/", join(
+    #         dataset_store, 'mean.binaryproto'))
+    #     args = shlex.split(command)
+    #     print("=====>{}".format(args))
+    #     p = subprocess.Popen(args)
 
-    # ./.build_debug/tools/convert_imageset --shuffle --resize_height=256 --resize_width=256  /tmp/pet/train/ /tmp/pet/train.txt  /tmp/pet/img_train_lmdb
 
+def caffe_home():
+    home_path = os.path.expanduser('~/')
+    caffe_path = findfile(home_path, 'caffe')
+    return caffe_path
 
 
 if __name__ == "__main__":
     dataset_path = "/home/liushuai/Datasets/pets/images"
     output_path = '/tmp/pet'
     output_path = datapreprocess(dataset_path, output_path)
-    dataset_home = '/tmp'
+    dataset_home = '/tmp/caffe_dataset'
+    # print(caffe_home())
     convert_dataset(output_path, dataset_home)
