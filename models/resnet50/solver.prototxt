@@ -1,5 +1,5 @@
 # the definition of neural network model
-net: "/home/liushuai/caffe-env/models/resnet50/train_val.prototxt"
+net: "/home/liushuai/caffe/models/resnet50/train_val.prototxt"
 # test_iter is related to batch_size in test layer, test_iter * batch_size = the number of test data
 test_iter: 512
 # carry out test once every 5 training iterations
