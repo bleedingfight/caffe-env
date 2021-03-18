@@ -14,7 +14,7 @@ layer {
   }
   data_param {
     source: "/tmp/caffe_dataset/train_lmdb"
-    batch_size: 16
+    batch_size: 2
     backend: LMDB
   }
 }
