@@ -1,0 +1,13 @@
+Icon theme "Numix-Circle-Light" not found.
+qt.qpa.xcb: QXcbConnection: XCB error: 5 (BadAtom), sequence: 474, resource id: 0, major code: 20 (GetProperty), minor code: 0
+Extracting usr/share/icons/hicolor/0x0/apps/netron.png to "/home/liushuai/.local/share/icons/hicolor/0x0/apps/appimagekit_c92112ea0880c442278e01242aa5b1c3_netron.png"
+WARNING: Unable to resize the application icon into a 128x128 image: "Unable to load image.". It will be written unchanged.
+WARNING: Unable to resize the application icon into a 256x256 image: "Unable to load image.". It will be written unchanged.
+gtk-update-icon-cache: Cache file created successfully.
+which: no gtk-update-icon-cache-3.0 in (/home/liushuai/miniconda3/bin:/home/liushuai/miniconda3/condabin:/usr/local/TensorRT-7.2.0.14/bin:/usr/local/texlive/2020/bin/x86_64-linux:/home/liushuai/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/opt/cuda/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/var/lib/snapd/snap/bin:/home/liushuai/.fzf/bin)
+which: no update-icon-caches in (/home/liushuai/miniconda3/bin:/home/liushuai/miniconda3/condabin:/usr/local/TensorRT-7.2.0.14/bin:/usr/local/texlive/2020/bin/x86_64-linux:/home/liushuai/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/opt/cuda/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/var/lib/snapd/snap/bin:/home/liushuai/.fzf/bin)
+Checking for update
+Error: Error: net::ERR_CONNECTION_CLOSED
+    at SimpleURLLoaderWrapper.<anonymous> (electron/js2c/browser_init.js:105:6497)
+    at SimpleURLLoaderWrapper.emit (events.js:315:20)
+net::ERR_CONNECTION_CLOSED
