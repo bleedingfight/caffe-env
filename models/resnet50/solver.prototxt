@@ -16,13 +16,13 @@ lr_policy: "poly"
 stepsize: 320000
 gamma: 0.96
 # The max number of iterations
-max_iter: 501
+max_iter: 2000
 power: 1.0
 momentum: 0.9
 # weight decay item, in case of overfitting
 weight_decay: 0.0002
 # save once every 50 training iterations
-snapshot: 10
+snapshot: 100
 # save path
 snapshot_prefix: "resnet-50-cervix"
 solver_mode: GPU
