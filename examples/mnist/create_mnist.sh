@@ -3,6 +3,7 @@
 # depending on the value assigned to $BACKEND.
 set -e
 CAFFE_HOME=${HOME}/caffe-env
+export LD_LIBRARY_PATH="/usr/local/lib":${LD_LIBRARY_PATH}
 if [ ! -d ${CAFFE_HOME} ];then
 	CAFFE_HOME=${HOME}/caffe
 fi
