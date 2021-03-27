@@ -20,6 +20,7 @@ class Classifier(caffe.Net):
     mean, input_scale, raw_scale, channel_swap: params for
         preprocessing options.
     """
+
     def __init__(self, model_file, pretrained_file, image_dims=None,
                  mean=None, input_scale=None, raw_scale=None,
                  channel_swap=None):
@@ -92,6 +93,7 @@ class Classifier(caffe.Net):
 
         # For oversampling, average predictions across crops.
         if oversample:
+            print(np.argmax(predictions, axis=1))
             predictions = predictions.reshape((len(predictions) / 10, 10, -1))
             predictions = predictions.mean(1)
 

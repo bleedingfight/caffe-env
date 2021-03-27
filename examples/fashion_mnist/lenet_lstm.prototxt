@@ -1,0 +1,95 @@
+name: "LeNet"
+input: "clip"
+input_shape { dim: 64 dim: 1 }
+layer {
+  name: "mnist"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  data_param {
+    source: "/home/liushuai/caffe/examples/mnist/mnist_train_lmdb"
+    batch_size: 64
+    backend: LMDB
+  }
+  input_param{shape:{dim:28 dim:28}}
+}
+layer {
+  name: "mnist"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  data_param {
+    source: "/home/liushuai/caffe/examples/mnist/mnist_test_lmdb"
+    batch_size: 64
+    backend: LMDB
+  }
+}
+layer {
+  name: "lstm1"
+  type: "LSTM"
+  bottom: "data"
+  bottom: "clip"
+  top: "lstm1"
+  recurrent_param {
+    num_output: 30
+    weight_filler {
+      type: "uniform"
+      min: -0.01
+      max: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "ip2"
+  type: "InnerProduct"
+  bottom: "lstm1"
+  top: "ip2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  inner_product_param {
+    num_output: 10
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "accuracy"
+  type: "Accuracy"
+  bottom: "ip2"
+  bottom: "label"
+  top: "accuracy"
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "ip2"
+  bottom: "label"
+  top: "loss"
+}

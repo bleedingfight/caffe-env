@@ -14,42 +14,25 @@ import json
 
 
 def datapreprocess(dataset_path, output_path, rate=0.8):
-    images = glob.glob("{}/*.jpg".format(dataset_path))
-    class_names = set()
-    dataset_dict = {}
-    def image_to_name(x): return "_".join(basename(x).split('_')[:-1])
-    for image in images:
-        class_name = image_to_name(image)
-        class_names.add(class_name)
-        if class_name not in dataset_dict:
-            dataset_dict[class_name] = [image]
-        else:
-            dataset_dict[class_name].append(image)
-    if not exists(output_path):
-        os.makedirs(output_path)
-    data = sorted(list(class_names))
-    class_to_num = {class_name: num for num, class_name in enumerate(data)}
+    class_names = sorted(os.listdir(dataset_path))
     with open(join(output_path, 'label.json'), 'w') as f:
+        class_to_num = {class_name:num for num,class_name in class_names}
         json.dump(fp=f, obj=class_to_num)
-
-    label_hander = {phase: open(
-        join(output_path, '{}.txt'.format(phase)), 'w') for phase in ['train', 'val']}
-    for key in dataset_dict:
-        images = dataset_dict[key]
-        num_train = int(len(images)*rate)
-        split_image = {'train': images[:num_train], 'val': images[num_train:]}
-        for phase in ['train', 'val']:
-            output_path_tmp = join(output_path, phase)
-            if not exists(output_path_tmp):
-                os.makedirs(output_path_tmp)
-            [shutil.copy(image, output_path_tmp)
-             for image in split_image[phase]]
-
-            [label_hander[phase].write("{} {}\n".format(basename(
-                image), class_to_num[image_to_name(image)])) for image in split_image[phase]]
-    [label_hander[key].close() for key in label_hander]
-    result = {'train_image_label': join(
-        output_path, 'train.txt'), 'val_image_label': join(output_path, 'val.txt'), 'label_to_num': join(output_path, 'label.json'), 'train_dataset': join(output_path, 'train'), 'val_dataset': join(output_path, 'val')}
+    for class_name in class_names:
+        images = os.listdir(dataset_path,class_name)
+        train_num = int(len(images)*rate)
+        train_image = images[:train_num]
+        val_image = images[train_num:]
+        [os.makedirs(join(output_path,phase),exist_ok=True) for phase in ['train','val']]
+        [shutil.copy(join(dataset_path,class_name,image), join(output_path,'train'))
+            for image in train_image]
+        [shutil.copy(join(dataset_path,class_name,image), join(output_path,'val'))
+            for image in val_image]
+    
+    for phase in ['train','val']:
+        with open(join(output_path,phase),'w') as f:
+            for image in os.listdir(output_path,'train'):
+                f.write("{} {}".format())
     return result
 
 
@@ -140,9 +123,9 @@ def base_network(in_path, output_path, args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='create parser parser data!')
-    parser.add_argument('--output_path', '-o', default='/tmp/pet', type=str)
+    parser.add_argument('--output_path', '-o', default='/tmp/flowers', type=str)
     parser.add_argument('--dataset_path', '-d',
-                        default='/home/liushuai/Datasets/pets/images', type=str)
+                        default='/home/liushuai/Datasets/flower_photos', type=str)
     parser.add_argument('--base_network', '-b',
                         default='/home/liushuai/caffe/models/bvlc_reference_caffenet', type=str)
     args = parser.parse_args()

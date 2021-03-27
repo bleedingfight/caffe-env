@@ -14,8 +14,8 @@ def dataset_loader():
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
     # Nomalize the images
-    x_train = (x_train / 255) - 0.5
-    x_test = (x_test / 255) - 0.5
+    x_train = (x_train / 255)
+    x_test = (x_test / 255)
     # one_hot encoding
     y_train = to_categorical(y_train, num_classes=10)
     y_test = to_categorical(y_test, num_classes=10)

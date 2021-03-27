@@ -1,0 +1,519 @@
+name: "LSTM using NetSpec example"
+layer {
+  name: "X"
+  type: "DummyData"
+  top: "X"
+  dummy_data_param {
+    shape {
+      dim: 3
+      dim: 10
+      dim: 128
+      dim: 10
+      dim: 10
+    }
+  }
+}
+layer {
+  name: "slice_X"
+  type: "Slice"
+  bottom: "X"
+  top: "Slice1"
+  top: "Slice2"
+  top: "Slice3"
+  slice_param {
+    slice_point: 1
+    slice_point: 2
+    axis: 0
+  }
+}
+layer {
+  name: "t0/lstm/Mx"
+  type: "InnerProduct"
+  bottom: "Slice1"
+  top: "t0/lstm/Mx"
+  param {
+    name: "w_t0/Mxw"
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    name: "w_t0/Mxb"
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  inner_product_param {
+    num_output: 2000
+    weight_filler {
+      type: "uniform"
+      min: -0.05000000074505806
+      max: 0.05000000074505806
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+    axis: 2
+  }
+}
+layer {
+  name: "h0"
+  type: "DummyData"
+  top: "DummyData1"
+  dummy_data_param {
+    data_filler {
+      type: "constant"
+      value: 0.0
+    }
+    shape {
+      dim: 1
+      dim: 10
+      dim: 500
+    }
+  }
+}
+layer {
+  name: "t0/lstm/Mh"
+  type: "InnerProduct"
+  bottom: "DummyData1"
+  top: "t0/lstm/Mh"
+  param {
+    name: "w_t0/Mhw"
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  inner_product_param {
+    num_output: 2000
+    bias_term: false
+    weight_filler {
+      type: "uniform"
+      min: -0.05000000074505806
+      max: 0.05000000074505806
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+    axis: 2
+  }
+}
+layer {
+  name: "t0/lstm/Mx+Mh"
+  type: "Eltwise"
+  bottom: "t0/lstm/Mx"
+  bottom: "t0/lstm/Mh"
+  top: "t0/lstm/Mx+Mh"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "t0/lstm/slice"
+  type: "Slice"
+  bottom: "t0/lstm/Mx+Mh"
+  top: "t0/lstm/raw_i"
+  top: "t0/lstm/raw_f"
+  top: "t0/lstm/raw_o"
+  top: "t0/lstm/raw_g"
+  slice_param {
+    slice_point: 500
+    slice_point: 1000
+    slice_point: 1500
+    axis: 2
+  }
+}
+layer {
+  name: "t0/lstm/o"
+  type: "Sigmoid"
+  bottom: "t0/lstm/raw_o"
+  top: "t0/lstm/raw_o"
+}
+layer {
+  name: "t0/lstm/f"
+  type: "Sigmoid"
+  bottom: "t0/lstm/raw_f"
+  top: "t0/lstm/raw_f"
+}
+layer {
+  name: "c0"
+  type: "DummyData"
+  top: "DummyData2"
+  dummy_data_param {
+    data_filler {
+      type: "constant"
+      value: 0.0
+    }
+    shape {
+      dim: 1
+      dim: 10
+      dim: 500
+    }
+  }
+}
+layer {
+  name: "t0/lstm/c_f"
+  type: "Eltwise"
+  bottom: "t0/lstm/raw_f"
+  bottom: "DummyData2"
+  top: "t0/lstm/c_f"
+  eltwise_param {
+    operation: PROD
+  }
+}
+layer {
+  name: "t0/lstm/i"
+  type: "Sigmoid"
+  bottom: "t0/lstm/raw_i"
+  top: "t0/lstm/raw_i"
+}
+layer {
+  name: "t0/lstm/g"
+  type: "TanH"
+  bottom: "t0/lstm/raw_g"
+  top: "t0/lstm/raw_g"
+}
+layer {
+  name: "t0/lstm/c_i"
+  type: "Eltwise"
+  bottom: "t0/lstm/raw_i"
+  bottom: "t0/lstm/raw_g"
+  top: "t0/lstm/c_i"
+  eltwise_param {
+    operation: PROD
+  }
+}
+layer {
+  name: "t0/lstm/c"
+  type: "Eltwise"
+  bottom: "t0/lstm/c_f"
+  bottom: "t0/lstm/c_i"
+  top: "t0/lstm/c"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "t0/lstm/act_c"
+  type: "TanH"
+  bottom: "t0/lstm/c"
+  top: "t0/lstm/act_c"
+}
+layer {
+  name: "t0/lstm/h"
+  type: "Eltwise"
+  bottom: "t0/lstm/raw_o"
+  bottom: "t0/lstm/act_c"
+  top: "t0/lstm/h"
+  eltwise_param {
+    operation: PROD
+  }
+}
+layer {
+  name: "t1/lstm/Mx"
+  type: "InnerProduct"
+  bottom: "Slice2"
+  top: "t1/lstm/Mx"
+  param {
+    name: "w_t0/Mxw"
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    name: "w_t0/Mxb"
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  inner_product_param {
+    num_output: 2000
+    weight_filler {
+      type: "uniform"
+      min: -0.05000000074505806
+      max: 0.05000000074505806
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+    axis: 2
+  }
+}
+layer {
+  name: "t1/lstm/Mh"
+  type: "InnerProduct"
+  bottom: "t0/lstm/h"
+  top: "t1/lstm/Mh"
+  param {
+    name: "w_t0/Mhw"
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  inner_product_param {
+    num_output: 2000
+    bias_term: false
+    weight_filler {
+      type: "uniform"
+      min: -0.05000000074505806
+      max: 0.05000000074505806
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+    axis: 2
+  }
+}
+layer {
+  name: "t1/lstm/Mx+Mh"
+  type: "Eltwise"
+  bottom: "t1/lstm/Mx"
+  bottom: "t1/lstm/Mh"
+  top: "t1/lstm/Mx+Mh"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "t1/lstm/slice"
+  type: "Slice"
+  bottom: "t1/lstm/Mx+Mh"
+  top: "t1/lstm/raw_i"
+  top: "t1/lstm/raw_f"
+  top: "t1/lstm/raw_o"
+  top: "t1/lstm/raw_g"
+  slice_param {
+    slice_point: 500
+    slice_point: 1000
+    slice_point: 1500
+    axis: 2
+  }
+}
+layer {
+  name: "t1/lstm/i"
+  type: "Sigmoid"
+  bottom: "t1/lstm/raw_i"
+  top: "t1/lstm/raw_i"
+}
+layer {
+  name: "t1/lstm/f"
+  type: "Sigmoid"
+  bottom: "t1/lstm/raw_f"
+  top: "t1/lstm/raw_f"
+}
+layer {
+  name: "t1/lstm/o"
+  type: "Sigmoid"
+  bottom: "t1/lstm/raw_o"
+  top: "t1/lstm/raw_o"
+}
+layer {
+  name: "t1/lstm/g"
+  type: "TanH"
+  bottom: "t1/lstm/raw_g"
+  top: "t1/lstm/raw_g"
+}
+layer {
+  name: "t1/lstm/c_f"
+  type: "Eltwise"
+  bottom: "t1/lstm/raw_f"
+  bottom: "t0/lstm/c"
+  top: "t1/lstm/c_f"
+  eltwise_param {
+    operation: PROD
+  }
+}
+layer {
+  name: "t1/lstm/c_i"
+  type: "Eltwise"
+  bottom: "t1/lstm/raw_i"
+  bottom: "t1/lstm/raw_g"
+  top: "t1/lstm/c_i"
+  eltwise_param {
+    operation: PROD
+  }
+}
+layer {
+  name: "t1/lstm/c"
+  type: "Eltwise"
+  bottom: "t1/lstm/c_f"
+  bottom: "t1/lstm/c_i"
+  top: "c1"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "t1/lstm/act_c"
+  type: "TanH"
+  bottom: "c1"
+  top: "t1/lstm/act_c"
+}
+layer {
+  name: "t1/lstm/h"
+  type: "Eltwise"
+  bottom: "t1/lstm/raw_o"
+  bottom: "t1/lstm/act_c"
+  top: "h1"
+  eltwise_param {
+    operation: PROD
+  }
+}
+layer {
+  name: "t2/lstm/Mx"
+  type: "InnerProduct"
+  bottom: "Slice3"
+  top: "t2/lstm/Mx"
+  param {
+    name: "w_t0/Mxw"
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    name: "w_t0/Mxb"
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  inner_product_param {
+    num_output: 2000
+    weight_filler {
+      type: "uniform"
+      min: -0.05000000074505806
+      max: 0.05000000074505806
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+    axis: 2
+  }
+}
+layer {
+  name: "t2/lstm/Mh"
+  type: "InnerProduct"
+  bottom: "h1"
+  top: "t2/lstm/Mh"
+  param {
+    name: "w_t0/Mhw"
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  inner_product_param {
+    num_output: 2000
+    bias_term: false
+    weight_filler {
+      type: "uniform"
+      min: -0.05000000074505806
+      max: 0.05000000074505806
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+    axis: 2
+  }
+}
+layer {
+  name: "t2/lstm/Mx+Mh"
+  type: "Eltwise"
+  bottom: "t2/lstm/Mx"
+  bottom: "t2/lstm/Mh"
+  top: "t2/lstm/Mx+Mh"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "t2/lstm/slice"
+  type: "Slice"
+  bottom: "t2/lstm/Mx+Mh"
+  top: "t2/lstm/raw_i"
+  top: "t2/lstm/raw_f"
+  top: "t2/lstm/raw_o"
+  top: "t2/lstm/raw_g"
+  slice_param {
+    slice_point: 500
+    slice_point: 1000
+    slice_point: 1500
+    axis: 2
+  }
+}
+layer {
+  name: "t2/lstm/i"
+  type: "Sigmoid"
+  bottom: "t2/lstm/raw_i"
+  top: "t2/lstm/raw_i"
+}
+layer {
+  name: "t2/lstm/f"
+  type: "Sigmoid"
+  bottom: "t2/lstm/raw_f"
+  top: "t2/lstm/raw_f"
+}
+layer {
+  name: "t2/lstm/o"
+  type: "Sigmoid"
+  bottom: "t2/lstm/raw_o"
+  top: "t2/lstm/raw_o"
+}
+layer {
+  name: "t2/lstm/g"
+  type: "TanH"
+  bottom: "t2/lstm/raw_g"
+  top: "t2/lstm/raw_g"
+}
+layer {
+  name: "t2/lstm/c_f"
+  type: "Eltwise"
+  bottom: "t2/lstm/raw_f"
+  bottom: "c1"
+  top: "t2/lstm/c_f"
+  eltwise_param {
+    operation: PROD
+  }
+}
+layer {
+  name: "t2/lstm/c_i"
+  type: "Eltwise"
+  bottom: "t2/lstm/raw_i"
+  bottom: "t2/lstm/raw_g"
+  top: "t2/lstm/c_i"
+  eltwise_param {
+    operation: PROD
+  }
+}
+layer {
+  name: "t2/lstm/c"
+  type: "Eltwise"
+  bottom: "t2/lstm/c_f"
+  bottom: "t2/lstm/c_i"
+  top: "c2"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "t2/lstm/act_c"
+  type: "TanH"
+  bottom: "c2"
+  top: "t2/lstm/act_c"
+}
+layer {
+  name: "t2/lstm/h"
+  type: "Eltwise"
+  bottom: "t2/lstm/raw_o"
+  bottom: "t2/lstm/act_c"
+  top: "h2"
+  eltwise_param {
+    operation: PROD
+  }
+}
+layer {
+  name: "concat_h"
+  type: "Concat"
+  bottom: "t0/lstm/h"
+  bottom: "h1"
+  bottom: "h2"
+  top: "H"
+  concat_param {
+    axis: 0
+  }
+}
+
