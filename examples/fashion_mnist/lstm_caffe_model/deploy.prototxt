@@ -1,0 +1,40 @@
+name: "LeNet"
+input: "clip"
+input_shape { dim: 1 dim: 1 }
+layer {
+    name: "data"
+	type: "Input"
+	top: "data"
+	input_param {shape:{dim:1 dim:1 dim:28 dim: 28}}
+}
+layer {
+  name: "lstm1"
+  type: "LSTM"
+  bottom: "data"
+  bottom: "clip"
+  top: "lstm1"
+  recurrent_param {
+    num_output: 30
+  }
+}
+layer {
+  name: "ip2"
+  type: "InnerProduct"
+  bottom: "lstm1"
+  top: "ip2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  inner_product_param {
+    num_output: 10
+  }
+}
+layer {
+  name: "prob"
+  type: "Softmax"
+  bottom: "ip2"
+  top: "prob"
+}

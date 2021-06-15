@@ -1,0 +1,424 @@
+2021-03-29 11:09:23.368871: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.11.0
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W0329 11:09:26.182371 62735 _caffe.cpp:122] DEPRECATION WARNING - deprecated use of Python interface
+W0329 11:09:26.182400 62735 _caffe.cpp:123] Use this instead (with the named "weights" parameter):
+W0329 11:09:26.182404 62735 _caffe.cpp:125] Net('/home/liushuai/caffe-env/examples/fashion_mnist/lstm_caffe_model/deploy.prototxt', 1, weights='/home/liushuai/caffe-env/examples/fashion_mnist/lstm_caffe_model/model.caffemodel')
+I0329 11:09:26.184330 62735 upgrade_proto.cpp:67] Attempting to upgrade input file specified using deprecated input fields: /home/liushuai/caffe-env/examples/fashion_mnist/lstm_caffe_model/deploy.prototxt
+I0329 11:09:26.184365 62735 upgrade_proto.cpp:70] Successfully upgraded file specified using deprecated input fields.
+W0329 11:09:26.184370 62735 upgrade_proto.cpp:72] Note that future Caffe releases will only support input layers and not input fields.
+I0329 11:09:26.184406 62735 net.cpp:58] Initializing net from parameters: 
+name: "LeNet"
+state {
+  phase: TEST
+  level: 0
+}
+layer {
+  name: "input"
+  type: "Input"
+  top: "clip"
+  input_param {
+    shape {
+      dim: 1
+      dim: 1
+    }
+  }
+}
+layer {
+  name: "data"
+  type: "Input"
+  top: "data"
+  input_param {
+    shape {
+      dim: 1
+      dim: 1
+      dim: 28
+      dim: 28
+    }
+  }
+}
+layer {
+  name: "lstm1"
+  type: "LSTM"
+  bottom: "data"
+  bottom: "clip"
+  top: "lstm1"
+  recurrent_param {
+    num_output: 30
+  }
+}
+layer {
+  name: "ip2"
+  type: "InnerProduct"
+  bottom: "lstm1"
+  top: "ip2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  inner_product_param {
+    num_output: 10
+  }
+}
+layer {
+  name: "prob"
+  type: "Softmax"
+  bottom: "ip2"
+  top: "prob"
+}
+I0329 11:09:26.184535 62735 layer_factory.hpp:77] Creating layer input
+I0329 11:09:26.184573 62735 net.cpp:100] Creating Layer input
+I0329 11:09:26.184584 62735 net.cpp:408] input -> clip
+I0329 11:09:26.184635 62735 net.cpp:150] Setting up input
+I0329 11:09:26.184648 62735 net.cpp:157] Top shape: 1 1 (1)
+I0329 11:09:26.184654 62735 net.cpp:165] Memory required for data: 4
+I0329 11:09:26.184662 62735 layer_factory.hpp:77] Creating layer data
+I0329 11:09:26.184679 62735 net.cpp:100] Creating Layer data
+I0329 11:09:26.184689 62735 net.cpp:408] data -> data
+I0329 11:09:26.184712 62735 net.cpp:150] Setting up data
+I0329 11:09:26.184721 62735 net.cpp:157] Top shape: 1 1 28 28 (784)
+I0329 11:09:26.184726 62735 net.cpp:165] Memory required for data: 3140
+I0329 11:09:26.184732 62735 layer_factory.hpp:77] Creating layer lstm1
+I0329 11:09:26.184747 62735 net.cpp:100] Creating Layer lstm1
+I0329 11:09:26.184756 62735 net.cpp:434] lstm1 <- data
+I0329 11:09:26.184767 62735 net.cpp:434] lstm1 <- clip
+I0329 11:09:26.184778 62735 net.cpp:408] lstm1 -> lstm1
+I0329 11:09:26.184796 62735 recurrent_layer.cpp:20] Initializing recurrent layer: assuming input batch contains 1 timesteps of 1 independent streams.
+I0329 11:09:26.184900 62735 net.cpp:58] Initializing net from parameters: 
+layer {
+  name: "lstm1_"
+  type: "Input"
+  top: "x"
+  top: "cont"
+  input_param {
+    shape {
+      dim: 1
+      dim: 1
+      dim: 28
+      dim: 28
+    }
+    shape {
+      dim: 1
+      dim: 1
+    }
+  }
+}
+layer {
+  name: "lstm1_"
+  type: "Input"
+  top: "c_0"
+  top: "h_0"
+  input_param {
+    shape {
+      dim: 1
+      dim: 1
+      dim: 30
+    }
+    shape {
+      dim: 1
+      dim: 1
+      dim: 30
+    }
+  }
+}
+layer {
+  name: "lstm1_cont_slice"
+  type: "Slice"
+  bottom: "cont"
+  top: "cont_1"
+  slice_param {
+    axis: 0
+  }
+}
+layer {
+  name: "lstm1_x_transform"
+  type: "InnerProduct"
+  bottom: "x"
+  top: "W_xc_x"
+  param {
+    name: "W_xc"
+  }
+  param {
+    name: "b_c"
+  }
+  propagate_down: true
+  inner_product_param {
+    num_output: 120
+    bias_term: true
+    weight_filler {
+    }
+    bias_filler {
+    }
+    axis: 2
+  }
+}
+layer {
+  name: "lstm1_W_xc_x_slice"
+  type: "Slice"
+  bottom: "W_xc_x"
+  top: "W_xc_x_1"
+  slice_param {
+    axis: 0
+  }
+}
+layer {
+  name: "lstm1_h_conted_0"
+  type: "Scale"
+  bottom: "h_0"
+  bottom: "cont_1"
+  top: "h_conted_0"
+  scale_param {
+    axis: 0
+  }
+}
+layer {
+  name: "lstm1_transform_1"
+  type: "InnerProduct"
+  bottom: "h_conted_0"
+  top: "W_hc_h_0"
+  param {
+    name: "W_hc"
+  }
+  inner_product_param {
+    num_output: 120
+    bias_term: false
+    weight_filler {
+    }
+    axis: 2
+  }
+}
+layer {
+  name: "lstm1_gate_input_1"
+  type: "Eltwise"
+  bottom: "W_hc_h_0"
+  bottom: "W_xc_x_1"
+  top: "gate_input_1"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "lstm1_unit_1"
+  type: "LSTMUnit"
+  bottom: "c_0"
+  bottom: "gate_input_1"
+  bottom: "cont_1"
+  top: "c_1"
+  top: "h_1"
+}
+layer {
+  name: "lstm1_"
+  type: "Split"
+  bottom: "c_1"
+  top: "c_T"
+}
+layer {
+  name: "lstm1_h_concat"
+  type: "Concat"
+  bottom: "h_1"
+  top: "h"
+  concat_param {
+    axis: 0
+  }
+}
+layer {
+  name: "h_pseudoloss"
+  type: "Reduction"
+  bottom: "h"
+  top: "h_pseudoloss"
+  loss_weight: 1
+}
+I0329 11:09:26.185082 62735 layer_factory.hpp:77] Creating layer lstm1_
+I0329 11:09:26.185103 62735 net.cpp:100] Creating Layer lstm1_
+I0329 11:09:26.185113 62735 net.cpp:408] lstm1_ -> x
+I0329 11:09:26.185139 62735 net.cpp:408] lstm1_ -> cont
+I0329 11:09:26.185165 62735 net.cpp:150] Setting up lstm1_
+I0329 11:09:26.185173 62735 net.cpp:157] Top shape: 1 1 28 28 (784)
+I0329 11:09:26.185180 62735 net.cpp:157] Top shape: 1 1 (1)
+I0329 11:09:26.185185 62735 net.cpp:165] Memory required for data: 3140
+I0329 11:09:26.185192 62735 layer_factory.hpp:77] Creating layer lstm1_
+I0329 11:09:26.185209 62735 net.cpp:100] Creating Layer lstm1_
+I0329 11:09:26.185218 62735 net.cpp:408] lstm1_ -> c_0
+I0329 11:09:26.185240 62735 net.cpp:408] lstm1_ -> h_0
+I0329 11:09:26.185261 62735 net.cpp:150] Setting up lstm1_
+I0329 11:09:26.185268 62735 net.cpp:157] Top shape: 1 1 30 (30)
+I0329 11:09:26.185276 62735 net.cpp:157] Top shape: 1 1 30 (30)
+I0329 11:09:26.185279 62735 net.cpp:165] Memory required for data: 3380
+I0329 11:09:26.185284 62735 layer_factory.hpp:77] Creating layer lstm1_cont_slice
+I0329 11:09:26.185300 62735 net.cpp:100] Creating Layer lstm1_cont_slice
+I0329 11:09:26.185307 62735 net.cpp:434] lstm1_cont_slice <- cont
+I0329 11:09:26.185322 62735 net.cpp:408] lstm1_cont_slice -> cont_1
+I0329 11:09:26.185349 62735 net.cpp:150] Setting up lstm1_cont_slice
+I0329 11:09:26.185357 62735 net.cpp:157] Top shape: 1 1 (1)
+I0329 11:09:26.185364 62735 net.cpp:165] Memory required for data: 3384
+I0329 11:09:26.185369 62735 layer_factory.hpp:77] Creating layer cont_1_lstm1_cont_slice_0_split
+I0329 11:09:26.185381 62735 net.cpp:100] Creating Layer cont_1_lstm1_cont_slice_0_split
+I0329 11:09:26.185389 62735 net.cpp:434] cont_1_lstm1_cont_slice_0_split <- cont_1
+I0329 11:09:26.185402 62735 net.cpp:408] cont_1_lstm1_cont_slice_0_split -> cont_1_lstm1_cont_slice_0_split_0
+I0329 11:09:26.185418 62735 net.cpp:408] cont_1_lstm1_cont_slice_0_split -> cont_1_lstm1_cont_slice_0_split_1
+I0329 11:09:26.185436 62735 net.cpp:150] Setting up cont_1_lstm1_cont_slice_0_split
+I0329 11:09:26.185443 62735 net.cpp:157] Top shape: 1 1 (1)
+I0329 11:09:26.185448 62735 net.cpp:157] Top shape: 1 1 (1)
+I0329 11:09:26.185453 62735 net.cpp:165] Memory required for data: 3392
+I0329 11:09:26.185458 62735 layer_factory.hpp:77] Creating layer lstm1_x_transform
+I0329 11:09:26.185475 62735 net.cpp:100] Creating Layer lstm1_x_transform
+I0329 11:09:26.185482 62735 net.cpp:434] lstm1_x_transform <- x
+I0329 11:09:26.185498 62735 net.cpp:408] lstm1_x_transform -> W_xc_x
+I0329 11:09:26.185817 62735 net.cpp:150] Setting up lstm1_x_transform
+I0329 11:09:26.185827 62735 net.cpp:157] Top shape: 1 1 120 (120)
+I0329 11:09:26.185833 62735 net.cpp:165] Memory required for data: 3872
+I0329 11:09:26.185865 62735 layer_factory.hpp:77] Creating layer lstm1_W_xc_x_slice
+I0329 11:09:26.185880 62735 net.cpp:100] Creating Layer lstm1_W_xc_x_slice
+I0329 11:09:26.185887 62735 net.cpp:434] lstm1_W_xc_x_slice <- W_xc_x
+I0329 11:09:26.185901 62735 net.cpp:408] lstm1_W_xc_x_slice -> W_xc_x_1
+I0329 11:09:26.185927 62735 net.cpp:150] Setting up lstm1_W_xc_x_slice
+I0329 11:09:26.185940 62735 net.cpp:157] Top shape: 1 1 120 (120)
+I0329 11:09:26.185946 62735 net.cpp:165] Memory required for data: 4352
+I0329 11:09:26.185952 62735 layer_factory.hpp:77] Creating layer lstm1_h_conted_0
+I0329 11:09:26.185966 62735 net.cpp:100] Creating Layer lstm1_h_conted_0
+I0329 11:09:26.185973 62735 net.cpp:434] lstm1_h_conted_0 <- h_0
+I0329 11:09:26.185984 62735 net.cpp:434] lstm1_h_conted_0 <- cont_1_lstm1_cont_slice_0_split_0
+I0329 11:09:26.185995 62735 net.cpp:408] lstm1_h_conted_0 -> h_conted_0
+I0329 11:09:26.186019 62735 net.cpp:150] Setting up lstm1_h_conted_0
+I0329 11:09:26.186028 62735 net.cpp:157] Top shape: 1 1 30 (30)
+I0329 11:09:26.186033 62735 net.cpp:165] Memory required for data: 4472
+I0329 11:09:26.186038 62735 layer_factory.hpp:77] Creating layer lstm1_transform_1
+I0329 11:09:26.186051 62735 net.cpp:100] Creating Layer lstm1_transform_1
+I0329 11:09:26.186058 62735 net.cpp:434] lstm1_transform_1 <- h_conted_0
+I0329 11:09:26.186072 62735 net.cpp:408] lstm1_transform_1 -> W_hc_h_0
+I0329 11:09:26.186108 62735 net.cpp:150] Setting up lstm1_transform_1
+I0329 11:09:26.186115 62735 net.cpp:157] Top shape: 1 1 120 (120)
+I0329 11:09:26.186121 62735 net.cpp:165] Memory required for data: 4952
+I0329 11:09:26.186141 62735 layer_factory.hpp:77] Creating layer lstm1_gate_input_1
+I0329 11:09:26.186161 62735 net.cpp:100] Creating Layer lstm1_gate_input_1
+I0329 11:09:26.186167 62735 net.cpp:434] lstm1_gate_input_1 <- W_hc_h_0
+I0329 11:09:26.186177 62735 net.cpp:434] lstm1_gate_input_1 <- W_xc_x_1
+I0329 11:09:26.186188 62735 net.cpp:408] lstm1_gate_input_1 -> gate_input_1
+I0329 11:09:26.186211 62735 net.cpp:150] Setting up lstm1_gate_input_1
+I0329 11:09:26.186218 62735 net.cpp:157] Top shape: 1 1 120 (120)
+I0329 11:09:26.186224 62735 net.cpp:165] Memory required for data: 5432
+I0329 11:09:26.186230 62735 layer_factory.hpp:77] Creating layer lstm1_unit_1
+I0329 11:09:26.186242 62735 net.cpp:100] Creating Layer lstm1_unit_1
+I0329 11:09:26.186247 62735 net.cpp:434] lstm1_unit_1 <- c_0
+I0329 11:09:26.186259 62735 net.cpp:434] lstm1_unit_1 <- gate_input_1
+I0329 11:09:26.186265 62735 net.cpp:434] lstm1_unit_1 <- cont_1_lstm1_cont_slice_0_split_1
+I0329 11:09:26.186288 62735 net.cpp:408] lstm1_unit_1 -> c_1
+I0329 11:09:26.186306 62735 net.cpp:408] lstm1_unit_1 -> h_1
+I0329 11:09:26.186326 62735 net.cpp:150] Setting up lstm1_unit_1
+I0329 11:09:26.186332 62735 net.cpp:157] Top shape: 1 1 30 (30)
+I0329 11:09:26.186338 62735 net.cpp:157] Top shape: 1 1 30 (30)
+I0329 11:09:26.186342 62735 net.cpp:165] Memory required for data: 5672
+I0329 11:09:26.186348 62735 layer_factory.hpp:77] Creating layer lstm1_
+I0329 11:09:26.186360 62735 net.cpp:100] Creating Layer lstm1_
+I0329 11:09:26.186367 62735 net.cpp:434] lstm1_ <- c_1
+I0329 11:09:26.186379 62735 net.cpp:408] lstm1_ -> c_T
+I0329 11:09:26.186396 62735 net.cpp:150] Setting up lstm1_
+I0329 11:09:26.186403 62735 net.cpp:157] Top shape: 1 1 30 (30)
+I0329 11:09:26.186408 62735 net.cpp:165] Memory required for data: 5792
+I0329 11:09:26.186414 62735 layer_factory.hpp:77] Creating layer lstm1_h_concat
+I0329 11:09:26.186424 62735 net.cpp:100] Creating Layer lstm1_h_concat
+I0329 11:09:26.186429 62735 net.cpp:434] lstm1_h_concat <- h_1
+I0329 11:09:26.186442 62735 net.cpp:408] lstm1_h_concat -> h
+I0329 11:09:26.186463 62735 net.cpp:150] Setting up lstm1_h_concat
+I0329 11:09:26.186470 62735 net.cpp:157] Top shape: 1 1 30 (30)
+I0329 11:09:26.186475 62735 net.cpp:165] Memory required for data: 5912
+I0329 11:09:26.186480 62735 layer_factory.hpp:77] Creating layer h_pseudoloss
+I0329 11:09:26.186492 62735 net.cpp:100] Creating Layer h_pseudoloss
+I0329 11:09:26.186498 62735 net.cpp:434] h_pseudoloss <- h
+I0329 11:09:26.186511 62735 net.cpp:408] h_pseudoloss -> h_pseudoloss
+I0329 11:09:26.186540 62735 net.cpp:150] Setting up h_pseudoloss
+I0329 11:09:26.186547 62735 net.cpp:157] Top shape: (1)
+I0329 11:09:26.186553 62735 net.cpp:160]     with loss weight 1
+I0329 11:09:26.186559 62735 net.cpp:165] Memory required for data: 5916
+I0329 11:09:26.186565 62735 net.cpp:226] h_pseudoloss needs backward computation.
+I0329 11:09:26.186574 62735 net.cpp:226] lstm1_h_concat needs backward computation.
+I0329 11:09:26.186579 62735 net.cpp:228] lstm1_ does not need backward computation.
+I0329 11:09:26.186584 62735 net.cpp:226] lstm1_unit_1 needs backward computation.
+I0329 11:09:26.186591 62735 net.cpp:226] lstm1_gate_input_1 needs backward computation.
+I0329 11:09:26.186596 62735 net.cpp:226] lstm1_transform_1 needs backward computation.
+I0329 11:09:26.186602 62735 net.cpp:228] lstm1_h_conted_0 does not need backward computation.
+I0329 11:09:26.186609 62735 net.cpp:226] lstm1_W_xc_x_slice needs backward computation.
+I0329 11:09:26.186614 62735 net.cpp:226] lstm1_x_transform needs backward computation.
+I0329 11:09:26.186619 62735 net.cpp:228] cont_1_lstm1_cont_slice_0_split does not need backward computation.
+I0329 11:09:26.186625 62735 net.cpp:228] lstm1_cont_slice does not need backward computation.
+I0329 11:09:26.186630 62735 net.cpp:228] lstm1_ does not need backward computation.
+I0329 11:09:26.186635 62735 net.cpp:228] lstm1_ does not need backward computation.
+I0329 11:09:26.186638 62735 net.cpp:270] This network produces output c_T
+I0329 11:09:26.186645 62735 net.cpp:270] This network produces output h_pseudoloss
+I0329 11:09:26.186669 62735 net.cpp:283] Network initialization done.
+I0329 11:09:26.186712 62735 recurrent_layer.cpp:150] Adding parameter 0: W_xc
+I0329 11:09:26.186717 62735 recurrent_layer.cpp:150] Adding parameter 1: b_c
+I0329 11:09:26.186722 62735 recurrent_layer.cpp:150] Adding parameter 2: W_hc
+I0329 11:09:26.186771 62735 net.cpp:150] Setting up lstm1
+I0329 11:09:26.186781 62735 net.cpp:157] Top shape: 1 1 30 (30)
+I0329 11:09:26.186786 62735 net.cpp:165] Memory required for data: 3260
+I0329 11:09:26.186817 62735 layer_factory.hpp:77] Creating layer ip2
+I0329 11:09:26.186834 62735 net.cpp:100] Creating Layer ip2
+I0329 11:09:26.186841 62735 net.cpp:434] ip2 <- lstm1
+I0329 11:09:26.186856 62735 net.cpp:408] ip2 -> ip2
+I0329 11:09:26.186892 62735 net.cpp:150] Setting up ip2
+I0329 11:09:26.186899 62735 net.cpp:157] Top shape: 1 10 (10)
+I0329 11:09:26.186905 62735 net.cpp:165] Memory required for data: 3300
+I0329 11:09:26.186925 62735 layer_factory.hpp:77] Creating layer prob
+I0329 11:09:26.186944 62735 net.cpp:100] Creating Layer prob
+I0329 11:09:26.186951 62735 net.cpp:434] prob <- ip2
+I0329 11:09:26.186965 62735 net.cpp:408] prob -> prob
+I0329 11:09:26.411928 62735 net.cpp:150] Setting up prob
+I0329 11:09:26.411964 62735 net.cpp:157] Top shape: 1 10 (10)
+I0329 11:09:26.411975 62735 net.cpp:165] Memory required for data: 3340
+I0329 11:09:26.411993 62735 net.cpp:228] prob does not need backward computation.
+I0329 11:09:26.412005 62735 net.cpp:228] ip2 does not need backward computation.
+I0329 11:09:26.412010 62735 net.cpp:228] lstm1 does not need backward computation.
+I0329 11:09:26.412016 62735 net.cpp:228] data does not need backward computation.
+I0329 11:09:26.412020 62735 net.cpp:228] input does not need backward computation.
+I0329 11:09:26.412024 62735 net.cpp:270] This network produces output prob
+I0329 11:09:26.412050 62735 net.cpp:283] Network initialization done.
+I0329 11:09:26.412286 62735 net.cpp:764] Copying source layer input
+I0329 11:09:26.412293 62735 net.cpp:761] Ignoring source layer mnist
+I0329 11:09:26.412297 62735 net.cpp:764] Copying source layer lstm1
+I0329 11:09:26.413329 62735 net.cpp:764] Copying source layer ip2
+I0329 11:09:26.413343 62735 net.cpp:761] Ignoring source layer loss
+2021-03-29 11:09:26.755780: I tensorflow/compiler/jit/xla_cpu_device.cc:41] Not creating XLA devices, tf_xla_enable_xla_devices not set
+2021-03-29 11:09:26.755913: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcuda.so.1
+2021-03-29 11:09:26.756019: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:941] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2021-03-29 11:09:26.756454: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1720] Found device 0 with properties: 
+pciBusID: 0000:01:00.0 name: GeForce GTX 980M computeCapability: 5.2
+coreClock: 1.1265GHz coreCount: 12 deviceMemorySize: 7.94GiB deviceMemoryBandwidth: 149.31GiB/s
+2021-03-29 11:09:26.756483: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.11.0
+2021-03-29 11:09:26.756526: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcublas.so.11
+2021-03-29 11:09:26.756555: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcublasLt.so.11
+2021-03-29 11:09:26.757369: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcufft.so.10
+2021-03-29 11:09:26.757410: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcurand.so.10
+2021-03-29 11:09:26.759082: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcusolver.so.10
+2021-03-29 11:09:26.759494: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcusparse.so.11
+2021-03-29 11:09:26.759550: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudnn.so.8
+2021-03-29 11:09:26.759685: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:941] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2021-03-29 11:09:26.760089: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:941] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2021-03-29 11:09:26.760371: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1862] Adding visible gpu devices: 0
+2021-03-29 11:09:26.761127: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:941] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2021-03-29 11:09:26.761438: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1720] Found device 0 with properties: 
+pciBusID: 0000:01:00.0 name: GeForce GTX 980M computeCapability: 5.2
+coreClock: 1.1265GHz coreCount: 12 deviceMemorySize: 7.94GiB deviceMemoryBandwidth: 149.31GiB/s
+2021-03-29 11:09:26.761459: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.11.0
+2021-03-29 11:09:26.761473: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcublas.so.11
+2021-03-29 11:09:26.761489: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcublasLt.so.11
+2021-03-29 11:09:26.761520: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcufft.so.10
+2021-03-29 11:09:26.761535: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcurand.so.10
+2021-03-29 11:09:26.761561: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcusolver.so.10
+2021-03-29 11:09:26.761588: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcusparse.so.11
+2021-03-29 11:09:26.761603: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudnn.so.8
+2021-03-29 11:09:26.761654: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:941] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2021-03-29 11:09:26.761977: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:941] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2021-03-29 11:09:26.762255: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1862] Adding visible gpu devices: 0
+2021-03-29 11:09:26.762286: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.11.0
+2021-03-29 11:09:27.148059: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1261] Device interconnect StreamExecutor with strength 1 edge matrix:
+2021-03-29 11:09:27.148093: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1267]      0 
+2021-03-29 11:09:27.148100: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1280] 0:   N 
+2021-03-29 11:09:27.148349: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:941] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2021-03-29 11:09:27.148962: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:941] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2021-03-29 11:09:27.149440: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:941] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2021-03-29 11:09:27.149904: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1406] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 7351 MB memory) -> physical GPU (device: 0, name: GeForce GTX 980M, pci bus id: 0000:01:00.0, compute capability: 5.2)
+2021-03-29 11:09:27.150280: I tensorflow/compiler/jit/xla_gpu_device.cc:99] Not creating XLA devices, tf_xla_enable_xla_devices not set
+Caffe Home:/home/liushuai/caffe-env
+Predict value:[9] ground thruth:9

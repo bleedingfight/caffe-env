@@ -1,6 +1,16 @@
 name: "LeNet"
-input: "clip"
-input_shape { dim: 64 dim: 1 }
+layer {
+  name: "input"
+  type: "Input"
+  top: "clip"
+  input_param {
+    shape {
+      dim: 64
+      dim: 1
+    }
+  }
+}
+
 layer {
   name: "mnist"
   type: "Data"
@@ -17,7 +27,7 @@ layer {
     batch_size: 64
     backend: LMDB
   }
-  input_param{shape:{dim:28 dim:1 dim:28}}
+  input_param{shape:{dim: 28 dim:1 dim:28}}
 }
 layer {
   name: "mnist"
@@ -37,11 +47,11 @@ layer {
   }
 }
 layer {
-  name: "lstm1"
-  type: "LSTM"
+  name: "rnn1"
+  type: "RNN"
   bottom: "data"
   bottom: "clip"
-  top: "lstm1"
+  top: "rnn1"
   recurrent_param {
     num_output: 30
     weight_filler {
@@ -58,7 +68,7 @@ layer {
 layer {
   name: "ip2"
   type: "InnerProduct"
-  bottom: "lstm1"
+  bottom: "rnn1"
   top: "ip2"
   param {
     lr_mult: 1
