@@ -3,7 +3,7 @@ import sys
 import importlib
 import caffe
 import numpy as np
-from os.path import join
+from os.path import join, expanduser
 
 from mnist import MnistInput
 
@@ -25,8 +25,6 @@ def generate_model(py_model, **kwparams):
     with open(netfile, 'w') as f:
         f.write('# Generated network model: {} \n'.format(model_name))
         f.write(netproto)
-
-    return
 
 
 def compute_result(conf_matrix):
@@ -90,7 +88,7 @@ def run_one_epoch(solver, params, data, is_training):
     num_batches = X.shape[0]
     conf_matrix = np.zeros(shape=(params['n_classes'], params['n_classes']))
 
-    #num_batches = 3
+    #num_batches = 300
     for i in range(num_batches):
         if params['recur_steps'] != 1:
             one_batch = (X[i], Y[i], data[2][i])
@@ -102,7 +100,7 @@ def run_one_epoch(solver, params, data, is_training):
     return conf_matrix
 
 
-def train_and_valid(solver, data_train, data_valid, params):
+def train_and_valid(solver, data_train, data_valid, params, saved_caffemodel):
     n_epochs = params['n_epochs']
     for i in range(n_epochs):
         print("Epochs {:d}:".format(i))
@@ -114,17 +112,43 @@ def train_and_valid(solver, data_train, data_valid, params):
         train_accuracy = compute_result(train_confmat)[-1]
         valid_accuracy = compute_result(valid_confmat)[-1]
 
-        print("     Accuracy of training: {:4.2f}, validation {:4.2f}".format(
+        print("     Accuracy of training: {:4.2f} %, validation {:4.2f}%".format(
             train_accuracy, valid_accuracy))
+
+    solver.net.save(saved_caffemodel)
 
     return
 
 
+def inference(model_def, model_weights, data, params):
+    net = caffe.Net(model_def,      # defines the structure of the model
+                    model_weights,  # contains the trained weights
+                    caffe.TEST)
+    for layer_name, blob in net.blobs.items():
+        print(layer_name + '\t' + str(blob.data.shape))
+    # net.blobs['data'] = data[0]
+    # predicts = np.argmax(net.forward()['class_prob'], axis=1)
+
+    # labels = data[1]
+    net.blobs['data'].data[...] = data[0]  # X
+    net.blobs['label'].data[...] = data[1].astype(int)  # Y
+    if params['recur_steps'] != 1:
+        net.solver.test_nets[0].blobs['clip'].data[...] = data[2].astype(
+            int)  # C
+
+    # to work around Caffe's bug when restoring training
+    # solver.test_nets[0].share_with(solver.net)
+    predicts = net.forward().blobs['class_prob'].data
+    return predicts
+
+
 def main():
-    basename = '/home/liushuai/caffe/examples/mnist_lstm/'
-    mnist_dataset = '/home/liushuai/caffe/data/mnist'
+    CAFFE_HOME = expanduser('~/caffe')
+    basename = join(CAFFE_HOME, 'examples', 'mnist_lstm')
+    mnist_dataset = join(CAFFE_HOME, 'data', 'mnist')
     py_model = join(basename, "cnn_lstm.py")
     solverfile = join(basename, "solver.prototxt")
+    saved_caffemodel = join(basename, 'mnist_lstm.caffemodel')
     params = {
         'kernel_size': 5,
         'n_output': 28,
@@ -143,8 +167,12 @@ def main():
         params['batch_size'], params['recur_steps'])
     data_valid = MnistInput("test", mnist_dataset).prepare(
         params['batch_size'], params['recur_steps'])
-
-    train_and_valid(solver, data_train, data_valid, params)
+    if not os.path.exists(saved_caffemodel):
+        train_and_valid(solver, data_train, data_valid, params)
+    else:
+        network_proto = join(CAFFE_HOME, 'cnn_lstm.prototxt')
+        res = inference(network_proto, saved_caffemodel, data_valid, params)
+        print(res)
     return
 
 

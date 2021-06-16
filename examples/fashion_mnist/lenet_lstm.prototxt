@@ -13,7 +13,7 @@ layer {
     scale: 0.00390625
   }
   data_param {
-    source: "/home/liushuai/caffe-env/examples/fashion_mnist/mnist_train_lmdb"
+    source: "/home/liushuai/caffe/examples/fashion_mnist/mnist_train_lmdb"
     batch_size: 64
     backend: LMDB
   }
@@ -31,7 +31,7 @@ layer {
     scale: 0.00390625
   }
   data_param {
-    source: "/home/liushuai/caffe-env/examples/fashion_mnist/mnist_test_lmdb"
+    source: "/home/liushuai/caffe/examples/fashion_mnist/mnist_test_lmdb"
     batch_size: 64
     backend: LMDB
   }
