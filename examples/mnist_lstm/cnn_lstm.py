@@ -11,7 +11,7 @@ def cnn_lstm(**args):
     batch_size = args.get('batch_size', 300)
     recur_steps = args.get('recur_steps', 4)
     n_classes = args.get('n_classes', 10)
-    frame_shape = args.get('frame_shape', (1, n_rows/recur_steps, n_cols))
+    frame_shape = args.get('frame_shape', (1, n_rows//recur_steps, n_cols))
 
     n = caffe.NetSpec()
 

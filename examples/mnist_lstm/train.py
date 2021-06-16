@@ -3,6 +3,7 @@ import sys
 import importlib
 import caffe
 import numpy as np
+from os.path import join
 
 from mnist import MnistInput
 
@@ -120,8 +121,10 @@ def train_and_valid(solver, data_train, data_valid, params):
 
 
 def main():
-    py_model = "./cnn_lstm.py"
-    solverfile = "./solver.prototxt"
+    basename = '/home/liushuai/caffe/examples/mnist_lstm/'
+    mnist_dataset = '/home/liushuai/caffe/data/mnist'
+    py_model = join(basename, "cnn_lstm.py")
+    solverfile = join(basename, "solver.prototxt")
     params = {
         'kernel_size': 5,
         'n_output': 28,
@@ -136,9 +139,9 @@ def main():
     generate_model(py_model, **params)
     solver = caffe.get_solver(solverfile)
 
-    data_train = MnistInput("train").prepare(
+    data_train = MnistInput("train", mnist_dataset).prepare(
         params['batch_size'], params['recur_steps'])
-    data_valid = MnistInput("test").prepare(
+    data_valid = MnistInput("test", mnist_dataset).prepare(
         params['batch_size'], params['recur_steps'])
 
     train_and_valid(solver, data_train, data_valid, params)

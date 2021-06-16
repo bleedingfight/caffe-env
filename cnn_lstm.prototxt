@@ -1,0 +1,216 @@
+# Generated network model: cnn_lstm 
+layer {
+  name: "data"
+  type: "Input"
+  top: "data"
+  top: "clip"
+  top: "label"
+  input_param {
+    shape {
+      dim: 1200
+      dim: 1
+      dim: 7
+      dim: 28
+    }
+    shape {
+      dim: 4
+      dim: 300
+    }
+    shape {
+      dim: 300
+      dim: 1
+    }
+  }
+}
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 1.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 28
+    pad: 0
+    kernel_size: 1
+    kernel_size: 5
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    stride_h: 1
+    stride_w: 1
+  }
+}
+layer {
+  name: "relu1"
+  type: "ReLU"
+  bottom: "conv1"
+  top: "conv1"
+}
+layer {
+  name: "conv2"
+  type: "Convolution"
+  bottom: "conv1"
+  top: "conv2"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 1.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 28
+    pad: 0
+    kernel_size: 1
+    kernel_size: 5
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    stride_h: 1
+    stride_w: 1
+  }
+}
+layer {
+  name: "relu2"
+  type: "ReLU"
+  bottom: "conv2"
+  top: "conv2"
+}
+layer {
+  name: "pool1"
+  type: "Pooling"
+  bottom: "conv2"
+  top: "pool1"
+  pooling_param {
+    pool: MAX
+    kernel_h: 1
+    kernel_w: 2
+    stride_h: 1
+    stride_w: 2
+  }
+}
+layer {
+  name: "fc1"
+  type: "InnerProduct"
+  bottom: "pool1"
+  top: "fc1"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 1.0
+    decay_mult: 0.0
+  }
+  inner_product_param {
+    num_output: 28
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "fc1_relu"
+  type: "ReLU"
+  bottom: "fc1"
+  top: "fc1"
+}
+layer {
+  name: "fc1_reshape"
+  type: "Reshape"
+  bottom: "fc1"
+  top: "fc1_reshape"
+  reshape_param {
+    shape {
+      dim: 4
+      dim: 300
+      dim: 28
+    }
+  }
+}
+layer {
+  name: "lstm"
+  type: "LSTM"
+  bottom: "fc1_reshape"
+  bottom: "clip"
+  top: "lstm"
+  recurrent_param {
+    num_output: 28
+  }
+}
+layer {
+  name: "Slice1"
+  type: "Slice"
+  bottom: "lstm"
+  top: "Slice1"
+  top: "lstm_last_step"
+  slice_param {
+    slice_point: 3
+    axis: 0
+  }
+}
+layer {
+  name: "lstm_reshape"
+  type: "Reshape"
+  bottom: "lstm_last_step"
+  top: "lstm_reshape"
+  reshape_param {
+    shape {
+      dim: 300
+      dim: 28
+    }
+  }
+}
+layer {
+  name: "attrs"
+  type: "InnerProduct"
+  bottom: "lstm_reshape"
+  top: "attrs"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 1.0
+    decay_mult: 0.0
+  }
+  inner_product_param {
+    num_output: 10
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "attrs"
+  bottom: "label"
+  top: "loss"
+}
+layer {
+  name: "class_prob"
+  type: "Softmax"
+  bottom: "attrs"
+  top: "class_prob"
+}
